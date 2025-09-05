@@ -1,0 +1,77 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Dependency directories and files
+node_modules/
+.pnp/
+.pnp.*
+yarn/
+*.db
+*.db*
+.next/
+build/
+dist/
+out/
+coverage/
+# Build and binary files
+bin/
+obj/
+.vs/
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.class
+
+# IDE and debug files
+*.ncb
+*.sdf
+*.suo
+*.pdb
+*.idb
+*.psess
+*.vsp*
+*.opendb
+*.VC.db
+
+# NuGet packages
+*.nuget
+*.nupkg
+*.snupkg
+*.nuspec
+
+# PowerShell modules
+*.psm1
+*.psd1
+
+# Miscellaneous
+*.jfmod
+*.tfstate
+.DS_Store
+*.pem
+
+# Test coverage
+coverage/
+
+# Next.js build output
+.next/
+out/
+
+# Production build
+build/
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env*
+
+# Vercel
+.vercel/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
