@@ -125,9 +125,12 @@ export default function EventForm() {
         onChange={handleChange}
         className="border p-2 w-full"
       />
-      <button type="submit" className="bg-blue-600 text-white p-2 rounded">
+      <div className="flex justify-center">
+      <button type="submit" className="bg-blue-600 text-white p-2 w-9/12 flex justify-center rounded">
         Create Event
       </button>
+
+      </div>
     </form>
   );
 }

@@ -31,13 +31,13 @@ namespace EventManagement.DTOs
 			if (EndTime <= StartTime)
 			{
 				yield return new ValidationResult("End time must be after start time",
-					new[] { nameof(EndTime) });
+					[nameof(EndTime)]);
 			}
 
 			if (StartTime < DateTime.Now)
 			{
 				yield return new ValidationResult("Event cannot be scheduled in the past",
-					new[] { nameof(StartTime) });
+					[nameof(StartTime)]);
 			}
 		}
 	}

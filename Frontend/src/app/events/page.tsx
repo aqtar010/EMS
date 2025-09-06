@@ -23,14 +23,17 @@ export default function EventsPage() {
 
   return (
     <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold">Upcoming Events</h1>
-      <Link
-        href="/events/create"
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        + Create Event
-      </Link>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Upcoming Events</h1>
+        <Link
+          href="/events/create"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          + Create Event
+        </Link>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
         {events.map((ev: EventDto) => (
           <EventCard key={ev.id} onDelete={handleDelete} event={ev} />
         ))}

@@ -7,7 +7,7 @@ interface AttendeeFormProps {
   onRegister: (attendee: AttendeeDto) => Promise<void>;
 }
 
-export default function AttendeeForm({  onRegister }: AttendeeFormProps) {
+export default function AttendeeForm({ onRegister }: AttendeeFormProps) {
   const [form, setForm] = useState<AttendeeDto>({ name: "", email: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,18 +27,23 @@ export default function AttendeeForm({  onRegister }: AttendeeFormProps) {
         placeholder="Name"
         value={form.name}
         onChange={handleChange}
-        className="border p-2 w-full"
+        className="border rounded-sm p-2 w-full"
       />
       <input
         name="email"
         placeholder="Email"
         value={form.email}
         onChange={handleChange}
-        className="border p-2 w-full"
+        className="border p-2 w-full rounded-sm"
       />
-      <button type="submit" className="bg-blue-600 text-white p-2 rounded">
-        Register
-      </button>
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          className="bg-blue-600 w-md text-white p-2 rounded"
+        >
+          Register
+        </button>
+      </div>
     </form>
   );
 }

@@ -17,7 +17,7 @@ public class ExceptionHandlingMiddleware
         }
         catch (EventFullException ex)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
             await context.Response.WriteAsJsonAsync(new { message = ex.Message });
         }
         catch (DuplicateAttendeeException ex)
