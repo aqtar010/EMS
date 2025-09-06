@@ -1,47 +1,35 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using EventManagement.Data;
 using EventManagement.DTOs;
-using EventManagement.Models;
 using EventManagement.Exceptions;
+using EventManagement.Models;
+using EventManagement.Services.Contracts;
+using Microsoft.EntityFrameworkCore;
 
-namespace EventManagement.Services
+namespace EventManagement.Services.Implementations
 {
-    public class AttendeeService : IAttendeeService
+    public class AttendeeService(EventDbContext context) : IAttendeeService
     {
-        private readonly EventDbContext _context;
-
-        public AttendeeService(EventDbContext context)
-        {
-            _context = context;
-        }
+        private readonly EventDbContext _context = context;
 
         public async Task<AttendeeDto> RegisterAttendeeAsync(int eventId, RegisterAttendeeDto dto)
         {
             var evt = await _context.Events
                 .Include(e => e.Attendees)
-                .FirstOrDefaultAsync(e => e.Id == eventId);
-
-            if (evt == null)
-            {
-                throw new NotFoundException($"Event with ID {eventId} not found");
-            }
+                .FirstOrDefaultAsync(e => e.Id == eventId) ?? throw new NotFoundException($"Event with ID {eventId} not found");
 
             // Check if event is fully booked
             if (evt.IsFullyBooked)
             {
-                throw new BusinessException("Event is fully booked");
+                throw new EventFullException("Event is fully booked.");
             }
 
             // Check for duplicate registration
-            var existingAttendee = await _context.Attendees
+            var attendeeAlreadyRegistered = await _context.Attendees
                 .AnyAsync(a => a.EventId == eventId && a.Email == dto.Email);
 
-            if (existingAttendee)
+            if (attendeeAlreadyRegistered)
             {
-                throw new BusinessException($"Email {dto.Email} is already registered for this event");
+                throw new DuplicateAttendeeException("Attendee already registered for this event.");
             }
 
             var attendee = new Attendee
@@ -66,12 +54,7 @@ namespace EventManagement.Services
 
         public async Task<PagedResult<AttendeeDto>> GetAttendeesAsync(int eventId, int pageNumber, int pageSize)
         {
-            var evt = await _context.Events.FindAsync(eventId);
-            if (evt == null)
-            {
-                throw new NotFoundException($"Event with ID {eventId} not found");
-            }
-
+            var evt = await _context.Events.FindAsync(eventId) ?? throw new NotFoundException($"Event with ID {eventId} not found");
             var query = _context.Attendees
                 .Where(a => a.EventId == eventId)
                 .OrderBy(a => a.RegisteredAt);

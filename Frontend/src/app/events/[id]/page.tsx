@@ -8,6 +8,10 @@ export default function EventDetailsPage({ params }: { params: Promise<{ id: str
   const { id } = React.use(params);
   const [eventData, setEventData] = useState<EventDto | null>(null);
   const [attendees, setAttendees] = useState<AttendeeDto[]>([]);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const [total, setTotal] = useState(0);
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -16,19 +20,36 @@ export default function EventDetailsPage({ params }: { params: Promise<{ id: str
       setEventData(found || null);
     };
     const fetchAttendees = async () => {
-      const attendeesRes = await EventsApi.getAttendees(id);
-      setAttendees(attendeesRes.data.items);
+      const attendeesRes = await EventsApi.getAttendees(id, page, pageSize);
+      console.log(attendeesRes.data);
+      setAttendees(attendeesRes.data.attendees ?? []);
+      setTotal(attendeesRes.data.totalAttendees || 0);
     };
     fetchEvent();
     fetchAttendees();
-  }, [id]);
+  }, [id, page]);
 
   const handleRegister = async (attendee: AttendeeDto) => {
-    await EventsApi.registerAttendee(id, attendee);
-    // Refresh attendee list after registration
-    const attendeesRes = await EventsApi.getAttendees(id);
-    setAttendees(attendeesRes.data.items);
+    try {
+      await EventsApi.registerAttendee(id, attendee);
+      // Refresh attendee list after registration
+      const attendeesRes = await EventsApi.getAttendees(id, page, pageSize);
+      setAttendees(attendeesRes.data.attendees);
+      setTotal(attendeesRes.data.totalAttendees|| 0);
+    } catch (error: unknown) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as { response?: { status?: number } }).response?.status === "number" &&
+        (error as { response: { status: number } }).response.status === 409
+      ) {
+        setShowPopup(true);
+      }
+    }
   };
+
+  const totalPages = Math.ceil(total / pageSize);
 
   if (!eventData) return <div>Event not found</div>;
 
@@ -53,6 +74,40 @@ export default function EventDetailsPage({ params }: { params: Promise<{ id: str
           </li>
         ))}
       </ul>
+      {totalPages > 1 && (
+        <div className="flex gap-2 mt-4">
+          <button
+            className="px-2 py-1 bg-gray-700 text-white rounded"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            Prev
+          </button>
+          <span className="text-white">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            className="px-2 py-1 bg-gray-700 text-white rounded"
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded shadow text-black">
+            <p>Max capacity reached. You cannot register more attendees.</p>
+            <button
+              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+              onClick={() => setShowPopup(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

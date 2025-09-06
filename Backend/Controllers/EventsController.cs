@@ -1,21 +1,15 @@
 using EventManagement.DTOs;
-using EventManagement.Services;
+using EventManagement.Services.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventManagement.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EventsController : ControllerBase
+    public class EventsController(IEventService eventService, IAttendeeService attendeeService) : ControllerBase
     {
-        private readonly IEventService _eventService;
-        private readonly IAttendeeService _attendeeService;
-
-        public EventsController(IEventService eventService, IAttendeeService attendeeService)
-        {
-            _eventService = eventService;
-            _attendeeService = attendeeService;
-        }
+        private readonly IEventService _eventService = eventService;
+        private readonly IAttendeeService _attendeeService = attendeeService;
 
         /// <summary>
         /// Creates a new event
@@ -85,7 +79,7 @@ namespace EventManagement.Controllers
         [HttpGet("{eventId}/attendees")]
         [ProducesResponseType(typeof(PagedResult<AttendeeDto>), 200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<PagedResult<AttendeeDto>>> GetAttendees(
+        public async Task<ActionResult<object>> GetAttendees(
             int eventId,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
@@ -95,7 +89,37 @@ namespace EventManagement.Controllers
             if (pageSize > 100) pageSize = 100; // Max page size
 
             var attendees = await _attendeeService.GetAttendeesAsync(eventId, pageNumber, pageSize);
-            return Ok(attendees);
+            var result = new
+            {
+                attendees.TotalCount,
+                attendees.Items,
+                attendees.PageNumber,
+                attendees.PageSize,
+                attendees.TotalPages,
+                attendees.HasPreviousPage,
+                attendees.HasNextPage
+            };
+            return Ok(result);
+        }
+        /// <summary>
+        /// Deletes an event by ID and all its associated attendees
+        /// </summary>
+        [HttpDelete("{eventId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteEvent(int eventId)
+        {
+            var evt = await _eventService.GetEventByIdAsync(eventId, "Asia/Kolkata");
+            if (evt == null)
+            {
+                return NotFound(new { message = $"Event with ID {eventId} not found" });
+            }
+            var res=await _eventService.DeleteEventByIdAsync(eventId);
+            if(!res)
+            {
+                return BadRequest(new { message = $"Failed to delete Event with ID {eventId}" });
+            }
+            return NoContent();
         }
     }
 }

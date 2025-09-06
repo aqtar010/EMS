@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using EventManagement.DTOs;
 
-namespace EventManagement.Services
+namespace EventManagement.Services.Contracts
 {
     public interface IAttendeeService
     {

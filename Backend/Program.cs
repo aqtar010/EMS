@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using EventManagement.Data;
-using EventManagement.Services;
 using EventManagement.Middleware;
 using System.Text.Json.Serialization;
+using EventManagement.Services.Contracts;
+using EventManagement.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,7 @@ app.UseCors("AllowNextJs");
 
 // Add global error handling middleware
 app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthorization();
 app.MapControllers();

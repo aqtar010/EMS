@@ -16,7 +16,8 @@ export interface EventDto {
   timeZone?: string; // Optional time zone field
 }
 export interface AttendeeListDto {
-    items: AttendeeDto[];
+    attendees: AttendeeDto[],
+    totalAttendees: number;
 }
 
 export interface AttendeeDto {
@@ -33,6 +34,8 @@ export const EventsApi = {
   createEvent: (data: EventDto) => api.post("/Events", data),
   registerAttendee: (eventId: string, data: AttendeeDto) =>
     api.post(`/Events/${eventId}/register`, data),
-  getAttendees: (eventId: string) =>
-    api.get<AttendeeListDto>(`/Events/${eventId}/attendees`),
+  getAttendees: (eventId: string, page = 1, pageSize = 10) =>
+  api.get<AttendeeListDto>(`/Events/${eventId}/attendees?pageNumber=${page}&pageSize=${pageSize}`),
+  deleteEvent: (eventId: string) =>
+    api.delete(`/Events/${eventId}`),
 };

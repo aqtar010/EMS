@@ -1,7 +1,13 @@
 import Link from "next/link";
-import { EventDto } from "@/lib/api";
+import { EventDto, EventsApi } from "@/lib/api";
 
-export default function EventCard({ event }: { event: EventDto }) {
+export default function EventCard({ event,onDelete }: { event: EventDto,onDelete: () => void }) {
+
+  const handleDelete = async () => {
+    if (!event.id) return;
+    await EventsApi.deleteEvent(event.id);
+    onDelete();
+  }
   return (
     <div className="border p-4 rounded shadow">
       <h2 className="text-xl font-semibold">{event.name}</h2>
@@ -17,6 +23,8 @@ export default function EventCard({ event }: { event: EventDto }) {
       >
         View Details
       </Link>
+      <button className="ml-4 bg-red-600 text-white p-2 rounded" onClick={handleDelete}>Delete Event</button>
+
     </div>
   );
 }

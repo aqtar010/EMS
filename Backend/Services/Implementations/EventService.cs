@@ -1,23 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using EventManagement.Data;
 using EventManagement.DTOs;
 using EventManagement.Models;
+using EventManagement.Services.Contracts;
 using EventManagement.Utilities;
+using Microsoft.EntityFrameworkCore;
 
-namespace EventManagement.Services
+namespace EventManagement.Services.Implementations
 {
-    public class EventService : IEventService
+    public class EventService(EventDbContext context) : IEventService
     {
-        private readonly EventDbContext _context;
-
-        public EventService(EventDbContext context)
-        {
-            _context = context;
-        }
+        private readonly EventDbContext _context = context;
 
         public async Task<EventDto> CreateEventAsync(CreateEventDto dto)
         {
@@ -69,9 +61,9 @@ namespace EventManagement.Services
             return evt != null ? MapToDto(evt, timeZone) : null;
         }
 
-        private EventDto MapToDto(Event evt, string timeZone)
+        private static EventDto MapToDto(Event evt, string timeZone)
         {
-            return new EventDto
+            return new()
             {
                 Id = evt.Id,
                 Name = evt.Name,
@@ -83,6 +75,19 @@ namespace EventManagement.Services
                 IsFullyBooked = evt.IsFullyBooked,
                 TimeZone = timeZone
             };
+        }
+
+        public Task<bool> DeleteEventByIdAsync(int id)
+        {
+            var evt = _context.Events.Include(e => e.Attendees).FirstOrDefault(e => e.Id == id);
+            if (evt == null)
+            {
+                return Task.FromResult(false);
+            }
+            evt.Attendees.Clear(); // Remove associated attendees
+            _context.Events.Remove(evt);
+            _context.SaveChanges();
+            return Task.FromResult(true);
         }
     }
 }
