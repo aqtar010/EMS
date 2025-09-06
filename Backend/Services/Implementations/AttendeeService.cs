@@ -76,8 +76,8 @@ namespace EventManagement.Services.Implementations
 
             return new PagedResult<AttendeeDto>
             {
-                Items = attendees,
-                TotalCount = totalCount,
+                Attendees = attendees,
+                TotalAttendees = totalCount,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 TotalPages = totalPages

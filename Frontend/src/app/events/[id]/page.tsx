@@ -2,16 +2,14 @@
 import { useEffect, useState } from "react";
 import { EventsApi, EventDto, AttendeeDto } from "@/lib/api";
 import AttendeeForm from "@/components/AttendeeForm";
+import AttendeeList from "@/components/AttendeeList";
 import React from "react";
 
 export default function EventDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
   const [eventData, setEventData] = useState<EventDto | null>(null);
-  const [attendees, setAttendees] = useState<AttendeeDto[]>([]);
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
-  const [total, setTotal] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
+  const [refreshFlag, setRefreshFlag] = useState(0);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -19,23 +17,19 @@ export default function EventDetailsPage({ params }: { params: Promise<{ id: str
       const found = events.find((e: EventDto) => e.id?.toString() === id);
       setEventData(found || null);
     };
-    const fetchAttendees = async () => {
-      const attendeesRes = await EventsApi.getAttendees(id, page, pageSize);
-      console.log(attendeesRes.data);
-      setAttendees(attendeesRes.data.attendees ?? []);
-      setTotal(attendeesRes.data.totalAttendees || 0);
-    };
+    refreshAttendees(); // Initial fetch of attendees
     fetchEvent();
-    fetchAttendees();
-  }, [id, page]);
+  }, [id]);
+
+  // This function will be passed to AttendeeList and called to trigger a refresh
+  const refreshAttendees = () => {
+    setRefreshFlag((prev) => prev + 1);
+  };
 
   const handleRegister = async (attendee: AttendeeDto) => {
     try {
       await EventsApi.registerAttendee(id, attendee);
-      // Refresh attendee list after registration
-      const attendeesRes = await EventsApi.getAttendees(id, page, pageSize);
-      setAttendees(attendeesRes.data.attendees);
-      setTotal(attendeesRes.data.totalAttendees|| 0);
+      refreshAttendees(); // Trigger attendee list refresh in child
     } catch (error: unknown) {
       if (
         typeof error === "object" &&
@@ -48,8 +42,6 @@ export default function EventDetailsPage({ params }: { params: Promise<{ id: str
       }
     }
   };
-
-  const totalPages = Math.ceil(total / pageSize);
 
   if (!eventData) return <div>Event not found</div>;
 
@@ -66,35 +58,8 @@ export default function EventDetailsPage({ params }: { params: Promise<{ id: str
       <h2 className="text-xl font-semibold mt-6">Register</h2>
       <AttendeeForm eventId={id} onRegister={handleRegister} />
 
-      <h2 className="text-xl font-semibold mt-6">Attendees</h2>
-      <ul className="list-disc pl-5">
-        {attendees.map((att: AttendeeDto) => (
-          <li style={{ color: "white" }} key={att.id}>
-            {att.name} ({att.email})
-          </li>
-        ))}
-      </ul>
-      {totalPages > 1 && (
-        <div className="flex gap-2 mt-4">
-          <button
-            className="px-2 py-1 bg-gray-700 text-white rounded"
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-          >
-            Prev
-          </button>
-          <span className="text-white">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            className="px-2 py-1 bg-gray-700 text-white rounded"
-            disabled={page === totalPages}
-            onClick={() => setPage(page + 1)}
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <AttendeeList EventId={id} refreshFlag={refreshFlag} />
+
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded shadow text-black">

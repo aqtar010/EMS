@@ -91,8 +91,8 @@ namespace EventManagement.Controllers
             var attendees = await _attendeeService.GetAttendeesAsync(eventId, pageNumber, pageSize);
             var result = new
             {
-                attendees.TotalCount,
-                attendees.Items,
+                attendees.TotalAttendees,
+                attendees.Attendees,
                 attendees.PageNumber,
                 attendees.PageSize,
                 attendees.TotalPages,

@@ -1,20 +1,12 @@
-using System;
+using EventManagement.Exceptions;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using EventManagement.Exceptions;
 
 namespace EventManagement.Middleware
 {
-    public class ErrorHandlingMiddleware
+    public class ErrorHandlingMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
-
-        public ErrorHandlingMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
+        private readonly RequestDelegate _next = next;
 
         public async Task InvokeAsync(HttpContext context)
         {
@@ -54,7 +46,7 @@ namespace EventManagement.Middleware
                     response = new
                     {
                         message = "An error occurred while processing your request",
-                        details = exception.Message
+                        details = exception.Message ?? null
                     };
                     break;
             }
