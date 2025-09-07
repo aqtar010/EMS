@@ -24,7 +24,7 @@ A full-stack web application for managing events and attendees, built with .NET 
 - **Framework**: Next.js 15
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
-- **UI Components**: Radix UI
+- **UI Components**: Radix UI , Shadcn
 - **Form Handling**: React Hook Form with Zod validation
 - **HTTP Client**: Axios
 
