@@ -30,7 +30,8 @@ namespace EventManagement.Services.Implementations
                 StartTimeUtc = startTimeUtc,
                 EndTimeUtc = endTimeUtc,
                 MaxCapacity = dto.MaxCapacity,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                EventTimeZone = dto.TimeZone
             };
 
             _context.Events.Add(evt);
@@ -73,7 +74,7 @@ namespace EventManagement.Services.Implementations
                 MaxCapacity = evt.MaxCapacity,
                 CurrentAttendeeCount = evt.CurrentAttendeeCount,
                 IsFullyBooked = evt.IsFullyBooked,
-                TimeZone = timeZone
+                TimeZone = evt.EventTimeZone
             };
         }
 

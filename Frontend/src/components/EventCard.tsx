@@ -17,10 +17,11 @@ export default function EventCard({ event,onDelete }: { event: EventDto,onDelete
         {new Date(event.endTime).toLocaleString()}
       </p>
       <p>Capacity : {event.maxCapacity}</p>
+      <p>TimeZone : {event.timeZone}</p>
       <div className="mt-4 flex justify-between items-center m-1">
       <Link
         href={`/events/${event.id}`}
-        className="text-blue-600 hover:underline"
+        className=" hover:underline"
       >
         View Details
       </Link>

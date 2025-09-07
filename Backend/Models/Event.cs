@@ -25,6 +25,8 @@ namespace EventManagement.Models
         [Range(1, 10000)]
         public int MaxCapacity { get; set; }
 
+        [Required]
+        public string EventTimeZone { get; set; } = "UTC";
         public DateTime CreatedAt { get; set; }
 
         public ICollection<Attendee> Attendees { get; set; } = new List<Attendee>();

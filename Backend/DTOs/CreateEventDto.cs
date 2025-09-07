@@ -1,5 +1,7 @@
+using EventManagement.Converter;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace EventManagement.DTOs
 {
@@ -14,10 +16,12 @@ namespace EventManagement.DTOs
 		public string Location { get; set; } = string.Empty;
 
 		[Required]
-		public DateTime StartTime { get; set; }
+        [JsonConverter(typeof(CustomDateTimeConverter))]
+        public DateTime StartTime { get; set; }
 
 		[Required]
-		public DateTime EndTime { get; set; }
+        [JsonConverter(typeof(CustomDateTimeConverter))]
+        public DateTime EndTime { get; set; }
 
 		[Required]
 		[Range(1, 10000)]
