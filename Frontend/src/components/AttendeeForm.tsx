@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { AttendeeDto } from "@/lib/api";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 interface AttendeeFormProps {
   eventId: string;
@@ -22,14 +24,14 @@ export default function AttendeeForm({ onRegister }: AttendeeFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
-      <input
+      <Input
         name="name"
         placeholder="Name"
         value={form.name}
         onChange={handleChange}
         className="border rounded-sm p-2 w-full"
       />
-      <input
+      <Input
         name="email"
         placeholder="Email"
         value={form.email}
@@ -37,12 +39,12 @@ export default function AttendeeForm({ onRegister }: AttendeeFormProps) {
         className="border p-2 w-full rounded-sm"
       />
       <div className="flex justify-center">
-        <button
+        <Button
           type="submit"
-          className="bg-blue-600 w-md text-white p-2 rounded"
+          className=" w-md  p-2 rounded transition-colors hover:bg-white hover:text-black"
         >
           Register
-        </button>
+        </Button>
       </div>
     </form>
   );

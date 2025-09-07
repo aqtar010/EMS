@@ -1,6 +1,15 @@
 "use client";
 import { AttendeeDto, EventsApi } from "@/lib/api";
 import { useEffect, useState } from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function AttendeeList({
   eventId,
@@ -17,6 +26,7 @@ export default function AttendeeList({
   const [total, setTotal] = useState(0);
 
   const totalPages = Math.ceil(total / pageSize);
+
   useEffect(() => {
     const fetchAttendees = async () => {
       const attendeesRes = await EventsApi.getAttendees(
@@ -24,12 +34,12 @@ export default function AttendeeList({
         page,
         pageSize
       );
-      console.log(attendeesRes.data);
       setAttendees(attendeesRes.data.attendees ?? []);
       setTotal(attendeesRes.data.totalAttendees || 0);
     };
     fetchAttendees();
   }, [page, eventId, refreshFlag]);
+
   useEffect(() => {
     if (setAttendeesCount) {
       setAttendeesCount(total);
@@ -38,34 +48,70 @@ export default function AttendeeList({
 
   return (
     <div>
+      <div className="h-65">
       <h2 className="text-xl font-semibold mt-6">Attendees</h2>
       <ul className="list-disc pl-5">
         {attendees.map((att: AttendeeDto) => (
-          <li style={{ color: "white" }} key={att.id}>
+          <li key={att.id} className="text-white">
             {att.name} ({att.email})
           </li>
         ))}
-      </ul>{" "}
+      </ul>
+      </div>
+
+
       {totalPages > 1 && (
-        <div className="flex gap-2 mt-4">
-          <button
-            className="px-2 py-1 bg-gray-700 text-white rounded"
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-          >
-            Prev
-          </button>
-          <span className="text-white">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            className="px-2 py-1 bg-gray-700 text-white rounded"
-            disabled={page === totalPages}
-            onClick={() => setPage(page + 1)}
-          >
-            Next
-          </button>
-        </div>
+        <Pagination className="mt-4">
+          <PaginationContent>
+            {/* Previous */}
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (page > 1) setPage(page - 1);
+                }}
+                className={`transition-colors hover:bg-white hover:text-black ${
+                  page === 1 ? "pointer-events-none opacity-50" : ""
+                }`}
+              />
+            </PaginationItem>
+
+            {/* Page numbers */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <PaginationItem key={p}>
+                <PaginationLink
+                  href="#"
+                  isActive={p === page}
+                  className="transition-colors hover:bg-white hover:text-black"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(p);
+                  }}
+                >
+                  {p}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            {/* Optional Ellipsis if many pages */}
+            {totalPages > 7 && <PaginationEllipsis />}
+
+            {/* Next */}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (page < totalPages) setPage(page + 1);
+                }}
+                className={`transition-colors hover:bg-white hover:text-black ${
+                  page === totalPages ? "pointer-events-none opacity-50" : ""
+                }`}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       )}
     </div>
   );
