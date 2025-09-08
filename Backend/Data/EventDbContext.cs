@@ -17,7 +17,7 @@ namespace EventManagement.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Event configuration
+            // Event configuration (Schema)
             modelBuilder.Entity<Event>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -27,7 +27,7 @@ namespace EventManagement.Data
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
 
-            // Attendee configuration
+            // Attendee configuration (Schema)
             modelBuilder.Entity<Attendee>(entity =>
             {
                 entity.HasKey(a => a.Id);
