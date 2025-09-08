@@ -52,6 +52,7 @@ export default function AttendeeForm({ onRegister }: AttendeeFormProps) {
           name="name"
           placeholder="Name"
           value={form.name}
+          autoComplete="off"
           onChange={handleChange}
           className="border rounded-sm p-2 w-full"
         />
@@ -63,6 +64,7 @@ export default function AttendeeForm({ onRegister }: AttendeeFormProps) {
         <Input
           name="email"
           placeholder="Email"
+          autoComplete="off"
           value={form.email}
           onChange={handleChange}
           className="border p-2 w-full rounded-sm"
