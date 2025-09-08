@@ -32,22 +32,7 @@ export default function EventDetailsPage({
   };
 
   const handleRegister = async (attendee: AttendeeDto) => {
-    // ✅ Frontend input validation
-    if (!attendee.name?.trim()) {
-      setPopupMessage("Name is required.");
-      setShowPopup(true);
-      return;
-    }
-    if (!attendee.email?.trim()) {
-      setPopupMessage("Email is required.");
-      setShowPopup(true);
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(attendee.email)) {
-      setPopupMessage("Please enter a valid email address.");
-      setShowPopup(true);
-      return;
-    }
+
 
     try {
       await EventsApi.registerAttendee(id, attendee);
