@@ -12,7 +12,7 @@ type SelectTimezoneWrapperProps = {
 };
 export default function SelectTimezoneWrapper({setTimeZone}:SelectTimezoneWrapperProps) {
   return (
-    <Select onValueChange={(value) => setTimeZone(value)}>
+    <Select onValueChange={(value) => setTimeZone(value)} defaultValue="Asia/Kolkata">
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Select a timezone" />
       </SelectTrigger>
